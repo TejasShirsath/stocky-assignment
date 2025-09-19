@@ -60,6 +60,7 @@ app.post('/api/reward',async (req, res)=>{
             return res.status(404).json({error: "stock not found"})
         }
 
+        // create stock record
         const reward = await prisma.reward.create({
             data:{
                 userId,
@@ -74,6 +75,37 @@ app.post('/api/reward',async (req, res)=>{
     }
 })
 
+// GET /api/today-stocks/{userId} – Return all stock rewards for the user for today.
+app.get('/api/today-stocks/:userId', async (req, res)=>{
+    try{
+        const {userId} = req.params;
+
+        // validation
+        if(!userId){
+            return res.status(400).json({error: "userId is required"});
+        }
+
+        // find all rewards for user for today
+        const stocks = await prisma.reward.findMany({
+            where:{
+                userId: parseInt(userId),
+                rewardedAt: {
+                    gte: new Date(new Date().setHours(0,0,0,0)),
+                }
+            },
+            include: {
+                stock: true,
+            },
+            orderBy: {
+                rewardedAt: "desc",
+            }
+        });
+        return res.status(200).json({stocks})
+    }catch(err){
+        console.error(err);
+        return res.status(500).json({error: "something went wrong"})
+    }
+})
 
 const server = app.listen(port, ()=>{
     console.log(`App listening on port ${port}`)
