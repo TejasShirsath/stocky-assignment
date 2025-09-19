@@ -1,6 +1,7 @@
 const express = require ('express');
 const {PrismaClient} = require('@prisma/client');
 
+
 const app = express();
 const port = 5000;
 
@@ -9,19 +10,37 @@ app.use(express.json());
 const prisma = global.prisma || new PrismaClient();
 if(process.env.NODE_ENV !== 'production') global.prisma = prisma;
 
-app.get('/',(req, res)=>{
-    res.json({"msg": "Hello World!"})
+// Routes
+app.get('/api/health',(req, res)=>{
+    res.send("Server is running successfully");
 })
 
-app.get('/user', async(req, res) => {
+// POST /api/user - Create user
+app.post('/api/user/',async (req,res)=>{
     try{
-        const users = await prisma.User.findMany();
-        res.json(users);
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ error: 'Faild to fetch users'});
+        const { name, email} = req.body;
+        if(!name || !email){
+            return res.status(400).json({error: "Name and email are required"});
+        }
+        // Create user
+        const user = await prisma.User.create({
+            data:{
+                name,
+                email
+            },
+        });
+        res.status(201).json(user);
+    }catch(error){
+        console.error(error);
+
+        if(error.code === "P2002"){
+            return res.status(409).json({error: "Email already exists"});
+        }
+
+        res.status(500).json({error: "something went wrong"});
     }
 });
+
 
 const server = app.listen(port, ()=>{
     console.log(`App listening on port ${port}`)
