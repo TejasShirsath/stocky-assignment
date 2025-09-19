@@ -23,7 +23,7 @@ app.post('/api/user/',async (req,res)=>{
             return res.status(400).json({error: "Name and email are required"});
         }
         // Create user
-        const user = await prisma.User.create({
+        const user = await prisma.user.create({
             data:{
                 name,
                 email
@@ -40,6 +40,39 @@ app.post('/api/user/',async (req,res)=>{
         res.status(500).json({error: "something went wrong"});
     }
 });
+
+// POST /api/reward - Record that a user got rewarded X shares of a stock.
+app.post('/api/reward',async (req, res)=>{
+    try{
+        const {userId, stockSymbol, shares} = req.body;
+        
+        // validation
+        if(!userId || !stockSymbol || !shares){
+            return res.status(400).json({error: "userId, stockSymbol and shares are required"})
+        }
+
+        // find stock by symbol
+        const stock = await prisma.stock.findUnique({
+            where: {stockSymbol}
+        })
+
+        if(!stock){
+            return res.status(404).json({error: "stock not found"})
+        }
+
+        const reward = await prisma.reward.create({
+            data:{
+                userId,
+                stockId: stock.id,
+                shares,
+            }
+        });
+        res.status(201).json(reward);
+    }catch(error){
+        console.error(error);
+        res.status(500).json({error: "something went wrong"})
+    }
+})
 
 
 const server = app.listen(port, ()=>{
