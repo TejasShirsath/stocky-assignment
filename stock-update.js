@@ -1,9 +1,4 @@
-
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = global.prisma || new PrismaClient();
-if(process.env.NODE_ENV !== 'production') global.prisma = prisma;
-
+const prisma = require('./db');
 const updateStockPrices = async () => {
   try {
     const stocks = await prisma.stock.findMany();
