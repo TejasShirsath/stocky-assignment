@@ -1,10 +1,10 @@
 {
   "version": 2,
   "name": "stocky-assignment",
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/index.js"
+      "source": "/(.*)",
+      "destination": "/index.js"
     }
   ],
   "env": {
