@@ -1,12 +1,12 @@
 const prisma = require('./db');
 const updateStockPrices = async () => {
   try {
-    const stocks = await prisma.stock.findMany();
+    const stocks = await prisma.Stock.findMany();
 
     for (const stock of stocks) {
       const randomPrice = parseFloat((Math.random() * 4000 + 1000).toFixed(2));
 
-      await prisma.stockprice.create({
+      await prisma.stockPrice.create({
         data: {
           stockId: stock.id,
           priceInr: randomPrice,
