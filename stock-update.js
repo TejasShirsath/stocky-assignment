@@ -6,7 +6,7 @@ const updateStockPrices = async () => {
     for (const stock of stocks) {
       const randomPrice = parseFloat((Math.random() * 4000 + 1000).toFixed(2));
 
-      await prisma.stockPrice.create({
+      await prisma.stockprice.create({
         data: {
           stockId: stock.id,
           priceInr: randomPrice,
