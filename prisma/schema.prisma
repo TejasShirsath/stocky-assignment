@@ -35,17 +35,6 @@ model Reward {
 
   user   User   @relation(fields: [userId], references: [id])
   stock  Stock  @relation(fields: [stockId], references: [id])
-  ledger Ledger[]
-}
-
-model Ledger {
-  id        Int       @id @default(autoincrement())
-  rewardId  Int
-  entryType String    // STOCK_PURCHASE, BROKERAGE, TAX, ADJUSTMENT
-  amountInr Decimal   @db.Decimal(18, 4)
-  createdAt DateTime  @default(now())
-
-  reward Reward @relation(fields: [rewardId], references: [id])
 }
 
 model StockPrice {
